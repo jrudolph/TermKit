@@ -393,7 +393,7 @@ exports.plugins.binary.prototype = extend(new exports.plugin(), {
 
   ansi: false,
   data: function (data) {
-    if (this.ansi || /\\u001b/(data.toString())) {
+    if (this.ansi || /\\e[\\[]/(data.toString())) {
       this.ansi = true; // switch to ansi mode as soon as we detect the CSI
       this.out.update('ansi', { contents: '<div class="ansi">'+ansi2html(data)+'</div>' }, true);
     }
