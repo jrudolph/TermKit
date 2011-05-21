@@ -269,7 +269,7 @@ exports.ansi2html = function(input /* Buffer */) {
 
         write('">');
 
-        write(input.slice(lastStart, i).toString());
+        write(input.slice(lastStart, i).toString().replace(/&/g, "&amp;").replace(/</g, "&lt;"));
         //write(''+lastStart+":"+i)
         write('</span>');
       }
