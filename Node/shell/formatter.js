@@ -8,6 +8,7 @@ var fs = require('fs'),
     composePath = require('misc').composePath,
     objectKeys = require('misc').objectKeys,
     reader = require('reader'),
+    ansi2html = require('misc').ansi2html,
     escapeBinary = require('misc').escapeBinary;
 
 /**
@@ -384,15 +385,22 @@ exports.plugins.binary = function (headers, out) {
 };
 
 exports.plugins.binary.prototype = extend(new exports.plugin(), {
-
   begin: function () {
     this.out.add(null, view.code('output', this.headers.generate(), 'text/plain'));
     this.out.add(null, view.code('output', '', 'text/plain'));
+    this.out.add(null, view.html('ansi'));
   },
 
+  ansi: false,
   data: function (data) {
-    var binary = escapeBinary(data);
-    this.out.update('output', { contents: binary }, true);
+    if (this.ansi || /\\u001b/(data.toString())) {
+      this.ansi = true; // switch to ansi mode as soon as we detect the CSI
+      this.out.update('ansi', { contents: '<div class="ansi">'+ansi2html(data)+'</div>' }, true);
+    }
+    else {
+      var binary = escapeBinary(data);
+      this.out.update('output', { contents: binary }, true);
+    }
   },
 
 });

@@ -223,3 +223,105 @@ exports.escapeBinary = function (data) {
     return char;
   });
 }
+
+/**
+ * A simple ansi terminal emulation. Understands only color codes and ignores the rest.
+ */
+exports.ansi2html = function(input /* Buffer */) {
+  var res = '';
+
+  var lastStart = -1;
+  var bright, color, background;
+  function reset () {
+    bright = false;
+    color = 0;
+    background = 7;
+  }
+
+  reset();
+
+  for (var i = 0; i < input.length ;) {
+    function charCode(char) {
+      return char.charCodeAt(0);
+    }
+    function accept(code) {
+      if (isNaN(code))
+        code = charCode(code);
+
+      if (input[i] != code)
+        i++; //throw new Error("Expected "+code+" got "+String.fromCharCode(input[i])); // just ignore for now
+      else
+        i++;
+    }
+    function write(str) {
+      res += str;
+    }
+    function flush() {
+      //console.log(lastStart+" "+(i-1));
+      if (lastStart >= 0 && lastStart < input.length && lastStart < i) {
+        write('<span class="');
+
+        if (bright)
+          write('b');
+
+        write('color'+color+' ');
+        write('back'+background+' ');
+
+        write('">');
+
+        write(input.slice(lastStart, i).toString());
+        //write(''+lastStart+":"+i)
+        write('</span>');
+      }
+    }
+    function number() {
+      var c0 = charCode('0');
+      var c9 = charCode('9');
+
+      var cur = input[i];
+      var res = 0;
+      while (cur >= c0 && cur <= c9 && i < input.length) {
+        res = 10 * res + (cur - c0);
+
+        i++;
+        cur = input[i];
+      }
+      return res;
+    }
+
+    if (input[i] == 27) {
+      flush();
+
+      accept(27);  // CSI
+      accept('[');
+      var option = number();
+      accept('m');
+
+      switch(option) {
+        case  0: reset(); break;
+        case  1: bright = true; break;
+        case 22: bright = undefined; break;
+        case 30:
+        case 31:
+        case 32:
+        case 33:
+        case 34:
+        case 35:
+        case 36:
+        case 37:
+          color = option - 30;
+          break;
+        default:
+          //console.log('undefined option: '+option);
+      }
+      lastStart = i;
+    } else if (input[i] == charCode('\n')) {
+        flush();
+        write('</br>');
+
+        i++;
+        lastStart = i;
+    } else i++;
+  }
+  return res;
+}

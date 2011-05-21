@@ -506,3 +506,66 @@ iframe#usage {
   margin: 0;
   padding: 0;
 }
+
+.color0 {
+  // use default here
+}
+.color1 {
+  color: #c00;
+}
+.color2 {
+  color: #4E9A06;
+}
+.color3 {
+  color: #C4A000;
+}
+.color4 {
+  color: #3465A4;
+}
+.color5 {
+  color: #75507B;
+}
+.color6 {
+  color: #06989A;
+}
+.color7 {
+  color: #2E3436;
+}
+
+.bcolor0 {
+  color: #EEEEEC;
+  font-weight: bolder;
+}
+.bcolor1 {
+  color: #EF2929;
+  font-weight: bolder;
+}
+.bcolor2 {
+  color: #8AE234;
+  font-weight: bolder;
+}
+.bcolor3 {
+  color: #FCE94F;
+  font-weight: bolder;
+}
+.bcolor4 {
+  color: #729FCF;
+  font-weight: bolder;
+}
+.bcolor5 {
+  color: #729FCF;
+  font-weight: bolder;
+}
+.bcolor6 {
+  color: #AD7FA8;
+  font-weight: bolder;
+}
+.bcolor7 {
+  color: #555753;
+  font-weight: bolder;
+}
+
+div.ansi {
+  font-family: "BitStream Vera Sans Mono", "Lucida Console", monospace;
+  font-size: 120%;
+}
