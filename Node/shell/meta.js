@@ -441,6 +441,7 @@ mime.define({
   'text/x-groovy': ['groovy'],
   'application/x-perl': ['pl', 'perl'],
   'application/x-php': ['php','phps'],
+  'text/x-markdown' : ['md', 'markdown'],
   'text/x-python': ['py', 'python'],
   'text/x-ruby': ['rb','ruby'],
   'text/x-sass': ['sass', 'scss'],

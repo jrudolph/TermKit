@@ -8,7 +8,8 @@ var fs = require('fs'),
     composePath = require('misc').composePath,
     objectKeys = require('misc').objectKeys,
     reader = require('reader'),
-    escapeBinary = require('misc').escapeBinary;
+    escapeBinary = require('misc').escapeBinary,
+    spawn = require('child_process').spawn;
 
 /**
  * Error logger.
@@ -402,3 +403,43 @@ exports.plugins.binary.supports = function (headers) {
   return !!(/^application\/octet-stream/(type)) * 1;
 }
 
+/**
+ * Markdown formatter.
+ * Spawns an instance of 'markdown' and pipes data through it.
+ */
+exports.plugins.markdown = function (headers, out) {
+  // Inherit.
+  exports.plugin.apply(this, arguments);
+};
+
+exports.plugins.markdown.prototype = extend(new exports.plugin(), {
+  begin: function (headers) {
+    this.out.add(null, view.html('output'));
+
+    // Buffered output.
+    return true;
+  },
+
+  data: function (data) {
+    this.md = spawn('markdown', ['-'])
+    var that = this
+    this.md.stdout.on('data', function (data) {
+      that.html = data;
+    });
+
+    this.md.stdin.write(data);
+    this.md.stdin.end();
+  },
+  end: function(exit) {
+    var that = this;
+    this.md.on('exit', function (code) {
+      that.out.update('output', { contents: that.html.toString() }, true);
+      exit(true);
+    });
+  }
+});
+
+exports.plugins.markdown.supports = function (headers) {
+  var type = headers.get('Content-Type');
+  return !!(/^text\/x-markdown/(type)) * 1;
+};
